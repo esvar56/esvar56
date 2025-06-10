@@ -1,12 +1,10 @@
-Private Sub UserForm_Initialize()
-    Dim btn As MSForms.CommandButton
-    Set btn = Me.Frame1.Controls.Add("Forms.CommandButton.1", "btnDynamic", True)
+Private Sub RemoveDynamicControls()
+    Dim ctrl As Control
 
-    With btn
-        .Caption = "Click Me"
-        .Left = 10
-        .Top = 50
-        .Width = 100
-        .Height = 30
-    End With
+    ' Loop through controls in the frame
+    For Each ctrl In Me.Frame1.Controls
+        If ctrl.Name = "lblDynamic" Or ctrl.Name = "txtDynamic" Then
+            Me.Frame1.Controls.Remove ctrl.Name
+        End If
+    Next ctrl
 End Sub
