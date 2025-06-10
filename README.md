@@ -1,16 +1,20 @@
-' In clsDynamicButton
-Public WithEvents btn As MSForms.CommandButton
+' In the UserForm module
+Dim btnHandler As clsDynamicButton ' Must be module-level
 
-Private Sub btn_Click()
-    Dim fd As FileDialog
-    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+Private Sub UserForm_Initialize()
+    Dim btn As MSForms.CommandButton
 
-    With fd
-        .Title = "Select a file"
-        .Filters.Clear
-        .Filters.Add "All Files", "*.*"
-        If .Show = -1 Then
-            MsgBox "Selected file: " & .SelectedItems(1)
-        End If
+    ' Create dynamic command button
+    Set btn = Me.Controls.Add("Forms.CommandButton.1", "btnBrowse", True)
+    With btn
+        .Caption = "Browse File"
+        .Left = 20
+        .Top = 20
+        .Width = 100
+        .Height = 30
     End With
+
+    ' Link the button to the event handler class
+    Set btnHandler = New clsDynamicButton
+    Set btnHandler.btn = btn
 End Sub
