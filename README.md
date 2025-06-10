@@ -1,10 +1,16 @@
-Private Sub RemoveDynamicControls()
-    Dim ctrl As Control
+' In clsDynamicButton
+Public WithEvents btn As MSForms.CommandButton
 
-    ' Loop through controls in the frame
-    For Each ctrl In Me.Frame1.Controls
-        If ctrl.Name = "lblDynamic" Or ctrl.Name = "txtDynamic" Then
-            Me.Frame1.Controls.Remove ctrl.Name
+Private Sub btn_Click()
+    Dim fd As FileDialog
+    Set fd = Application.FileDialog(msoFileDialogFilePicker)
+
+    With fd
+        .Title = "Select a file"
+        .Filters.Clear
+        .Filters.Add "All Files", "*.*"
+        If .Show = -1 Then
+            MsgBox "Selected file: " & .SelectedItems(1)
         End If
-    Next ctrl
+    End With
 End Sub
