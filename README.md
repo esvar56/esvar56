@@ -1,20 +1,7 @@
-' In the UserForm module
-Dim btnHandler As clsDynamicButton ' Must be module-level
+Dim filePath As String
+Dim fileName As String
 
-Private Sub UserForm_Initialize()
-    Dim btn As MSForms.CommandButton
+filePath = "C:\Users\YourName\Documents\example.xlsx"
+fileName = Dir(filePath)  ' Extracts: example.xlsx
 
-    ' Create dynamic command button
-    Set btn = Me.Controls.Add("Forms.CommandButton.1", "btnBrowse", True)
-    With btn
-        .Caption = "Browse File"
-        .Left = 20
-        .Top = 20
-        .Width = 100
-        .Height = 30
-    End With
-
-    ' Link the button to the event handler class
-    Set btnHandler = New clsDynamicButton
-    Set btnHandler.btn = btn
-End Sub
+MsgBox fileName
