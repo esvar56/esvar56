@@ -1,4 +1,4 @@
-function updateOrInsertRows() {
+function updateOrInsertRowsWithCompositeKey() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const sourceSheet = ss.getSheetByName("Source");
   const destSheet = ss.getSheetByName("Destination");
@@ -6,42 +6,33 @@ function updateOrInsertRows() {
   const sourceData = sourceSheet.getDataRange().getValues();
   const destData = destSheet.getDataRange().getValues();
 
+  const keyColumns = [0, 1, 2]; // Use columns A, B, C as composite key (0-based index)
+
   const destMap = new Map();
 
-  // Build a map for quick access from destination (use JSON string of row as key if no unique ID)
+  // Build key map from destination sheet
   destData.forEach((row, index) => {
-    const key = row.join("|||"); // Change this if you want a unique field instead
-    destMap.set(key, index);
+    const key = keyColumns.map(i => row[i]).join('|');
+    destMap.set(key, { index: index, row: row });
   });
 
   sourceData.forEach((srcRow) => {
-    const srcKey = srcRow.join("|||");
+    const key = keyColumns.map(i => srcRow[i]).join('|');
+    const match = destMap.get(key);
 
-    let found = false;
+    if (match) {
+      const destRow = match.row;
+      const isDifferent = JSON.stringify(destRow) !== JSON.stringify(srcRow);
 
-    // Check for similar row in dest by matching partial key (you can optimize this)
-    for (let i = 0; i < destData.length; i++) {
-      const destRow = destData[i];
-
-      // If the row matches entirely, skip
-      if (JSON.stringify(destRow) === JSON.stringify(srcRow)) {
-        found = true;
-        break;
+      if (isDifferent) {
+        // Update the row if contents are different
+        destSheet.getRange(match.index + 1, 1, 1, srcRow.length).setValues([srcRow]);
       }
-
-      // If the row partially matches (same key column), update
-      if (destRow[0] === srcRow[0]) {
-        destSheet.getRange(i + 1, 1, 1, srcRow.length).setValues([srcRow]);
-        found = true;
-        break;
-      }
-    }
-
-    // If not found, append to the bottom
-    if (!found) {
+    } else {
+      // Append the new row
       destSheet.appendRow(srcRow);
     }
   });
 
-  Logger.log("Sync complete.");
+  Logger.log("Update or insert completed.");
 }
